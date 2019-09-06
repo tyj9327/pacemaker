@@ -10,13 +10,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -30,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TextView titleToolbar;
     private LineChart lineChart;
+    private HorizontalBarChart horizontalBarChart;
+    private FrameLayout barchart_top;
+    private FrameLayout barchart_bottom;
 
 
     @Override
@@ -40,12 +51,17 @@ public class MainActivity extends AppCompatActivity {
         settingToolbar();
         settingLineChart();
 
+        barchart_top.setLayoutParams(new FrameLayout.LayoutParams(200, ViewGroup.LayoutParams.MATCH_PARENT));
+
     }
 
     private void findViews() {
         toolbar = findViewById(R.id.toolbar);
         titleToolbar = findViewById(R.id.title_toolbar);
         lineChart = findViewById(R.id.line_chart);
+        barchart_bottom = findViewById(R.id.barchart_back);
+        barchart_top = findViewById(R.id.barchart_top);
+
     }
 
     private void settingToolbar() {
@@ -55,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 //        getSupportActionBar().setHomeAsUpIndicator(R.drawable.home);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setNavigationIcon(R.drawable.home);
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.background_start));
         toolbar.setOverflowIcon(ContextCompat.getDrawable(this, R.drawable.menu));
     }
 
@@ -92,11 +109,28 @@ public class MainActivity extends AppCompatActivity {
 
         lineChart.setDoubleTapToZoomEnabled(false);
         lineChart.setDrawGridBackground(false);
+
+        lineChart.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
         lineChart.setDescription(description);
         lineChart.animateY(2000, Easing.EasingOption.EaseInCubic);
         lineChart.setData(lineData);
         lineChart.invalidate();
 
+    }
+
+    private void settingHorizontalBarChart() {
+        List<BarEntry> entries = new ArrayList<>();
+        BarEntry entry = new BarEntry(1, 1.7f);
+        entries.add(1, entry);
+
+        BarDataSet barDataSet = new BarDataSet(entries, "label");
+        barDataSet.setBarShadowColor(ContextCompat.getColor(getApplicationContext(), R.color.background_end));
+
+        BarData barData = new BarData(barDataSet);
+
+
+
+//        BarChart.
     }
 
     @Override

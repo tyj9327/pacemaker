@@ -12,11 +12,135 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/line_chart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-
+        android:layout_weight="5.5"
+        android:alpha="0.7"
     />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4.5"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:elevation="5dp"
+            android:translationZ="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/rectangle"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/background_start"
+                >
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:text="구진선 님"
+                    android:textColor="@color/background_start"
+                    android:textSize="20sp"
+                    android:background="#ffffff"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1.5"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="오늘의 음주량 정보"
+                    android:textColor="@color/background_start"
+                    android:textSize="12sp"
+                    android:layout_weight="1"
+                    android:background="#ffffff"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="6"
+                    android:orientation="vertical"
+                    android:background="#ffffff">
+
+                    <FrameLayout
+                        android:id="@+id/barchart_back"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/barchart_back_rounded">
+
+                        <FrameLayout
+                            android:orientation="horizontal"
+                            android:id="@+id/barchart_top"
+                            android:layout_width="30dp"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/barchart_top_rounded"
+                            android:layout_gravity="start">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="10%"
+                                android:layout_gravity="center_horizontal|center_vertical"
+                                android:gravity="center_horizontal|center_vertical"
+                                android:textSize="15sp"
+                                android:textColor="@color/white"/>
+
+                        </FrameLayout>
+
+
+                    </FrameLayout>
+
+
+<!--                    <com.github.mikephil.charting.charts.HorizontalBarChart-->
+<!--                        android:id="@+id/horizontal_chart"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:gravity="center_vertical"-->
+<!--                        android:orientation="horizontal"-->
+<!--                        />-->
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="5dp"
+                            android:layout_gravity="start"
+                            android:layout_width="40dp"
+                            android:layout_height="45dp"
+                            android:src="@drawable/cupicon" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+
+                
+                
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 
 </LinearLayout>
