@@ -70,9 +70,10 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 //        getSupportActionBar().setHomeAsUpIndicator(R.drawable.home);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setNavigationIcon(R.drawable.home);
+        toolbar.setNavigationIcon(R.drawable.home_white);
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.background_start));
-        toolbar.setOverflowIcon(ContextCompat.getDrawable(this, R.drawable.menu));
+        toolbar.setOverflowIcon(ContextCompat.getDrawable(this, R.drawable.menubar));
+
     }
 
     private void settingLineChart() {
