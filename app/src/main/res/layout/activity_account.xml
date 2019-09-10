@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AccountActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="6.5dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="53.25dp">
+
+
+
+        <ProgressBar
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:progress="3"
+            android:max="10"
+            android:id="@+id/progress_bar"
+            />
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_marginTop="141dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/account_logo"
+        />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"/>
+
+
+
+</LinearLayout>
