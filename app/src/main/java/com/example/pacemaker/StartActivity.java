@@ -3,6 +3,7 @@ package com.example.pacemaker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -35,4 +36,5 @@ public class StartActivity extends AppCompatActivity {
     private void findView() {
         startButton = findViewById(R.id.intro_start_button);
     }
+
 }

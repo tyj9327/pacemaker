@@ -1,6 +1,7 @@
 package com.example.pacemaker;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private TextView titleToolbar;
+    private TextView name;
     private LineChart lineChart;
     private HorizontalBarChart horizontalBarChart;
     private FrameLayout barchart_top;
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         settingLineChart();
 
         barchart_top.setLayoutParams(new FrameLayout.LayoutParams(200, ViewGroup.LayoutParams.MATCH_PARENT));
+        String user_info = getData("USER_NAME") + " " + getData("USER_GENDER");
+        name.setText(user_info);
 
     }
 
@@ -59,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         lineChart = findViewById(R.id.line_chart);
         barchart_bottom = findViewById(R.id.barchart_back);
         barchart_top = findViewById(R.id.barchart_top);
+        name = findViewById(R.id.main_name);
 
     }
 
@@ -159,5 +164,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getData(String key) {
+        SharedPreferences sf = getSharedPreferences("taeyoung", MODE_PRIVATE);
+        return sf.getString(key, "NONE");
     }
 }

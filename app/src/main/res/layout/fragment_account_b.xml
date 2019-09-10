@@ -19,16 +19,18 @@
         android:orientation="horizontal"
         android:layout_gravity="center_horizontal">
 
-        <ImageView
+        <Button
+            android:id="@+id/button_male"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/male"
+            android:background="@drawable/male"
             />
 
-        <ImageView
+        <Button
+            android:id="@+id/button_female"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/female"
+            android:background="@drawable/female"
             android:layout_marginStart="14dp"
             />
 

@@ -49,6 +49,7 @@
                 >
                 
                 <TextView
+                    android:id="@+id/main_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="1dp"
@@ -91,6 +92,7 @@
                             android:layout_gravity="start">
 
                             <TextView
+                                android:id="@+id/main_bar_percent"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:text="10%"
