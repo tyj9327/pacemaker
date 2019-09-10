@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="당신의 이름은 무엇인가요?"
+        android:textSize="16.25sp"
+        android:textColor="@color/background_start"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <EditText
+        android:id="@+id/edit_text_name"
+        android:layout_width="120.5dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="66.75dp"
+        android:backgroundTint="@color/background_start"
+        />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <ImageView
+            android:id="@+id/next_icon_a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="97.25dp"
+            android:layout_marginEnd="58dp"
+            android:src="@drawable/next_icon"
+            />
+
+
+
+    </FrameLayout>
+
+
+</LinearLayout>
