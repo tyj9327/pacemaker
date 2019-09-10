@@ -1,6 +1,9 @@
 package com.example.pacemaker;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -9,6 +12,10 @@ import android.widget.ProgressBar;
 public class AccountActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
+    private FragmentA fragmentA;
+    private FragmentB fragmentB;
+    private FragmentC fragmentC;
+    private FragmentTransaction fragmentTransaction;
     private int pageNum = 1;
 
     @Override
@@ -17,6 +24,14 @@ public class AccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account);
         findViews();
         setProgressBar();
+
+        FragmentManager fm = getSupportFragmentManager();
+        fragmentA = new FragmentA();
+        fragmentB = new FragmentB();
+        fragmentC = new FragmentC();
+        fragmentTransaction = fm.beginTransaction();
+
+        fragmentTransaction.replace(R.id.fragment_layout, fragmentA).commitAllowingStateLoss();
 
 
 
