@@ -15,9 +15,11 @@
     <EditText
         android:id="@+id/edit_text_name"
         android:layout_width="120.5dp"
-        android:layout_height="18dp"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="66.75dp"
+        android:autofillHints="Name"
         android:backgroundTint="@color/background_start"
         />
 
@@ -31,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_marginBottom="97.25dp"
+            android:layout_marginBottom="80dp"
             android:layout_marginEnd="58dp"
             android:src="@drawable/next_icon"
             />

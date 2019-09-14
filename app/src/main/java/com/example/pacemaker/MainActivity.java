@@ -1,6 +1,7 @@
 package com.example.pacemaker;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -8,6 +9,7 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,8 +35,17 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    //constants
+    private static final float SOJU_VOLUME = 360f;
+    private static final float BEER_VOLUME_DEFAULT = 500f;
+
     private Toolbar toolbar;
     private TextView titleToolbar;
+    private TextView name;
+    private TextView alcoholPercent;
+    private float alcoholBarSize;
+
+    // Charts
     private LineChart lineChart;
     private HorizontalBarChart horizontalBarChart;
     private FrameLayout barchart_top;
@@ -49,7 +60,10 @@ public class MainActivity extends AppCompatActivity {
         settingToolbar();
         settingLineChart();
 
-        barchart_top.setLayoutParams(new FrameLayout.LayoutParams(200, ViewGroup.LayoutParams.MATCH_PARENT));
+        String user_info = getData("USER_NAME") + " " + getData("USER_GENDER");
+        name.setText(user_info);
+        setHorizontalBarChart();
+
 
     }
 
@@ -59,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         lineChart = findViewById(R.id.line_chart);
         barchart_bottom = findViewById(R.id.barchart_back);
         barchart_top = findViewById(R.id.barchart_top);
+        name = findViewById(R.id.main_name);
+        alcoholPercent = findViewById(R.id.main_bar_percent);
 
     }
 
@@ -139,6 +155,18 @@ public class MainActivity extends AppCompatActivity {
 //        BarChart.
     }
 
+    private void setHorizontalBarChart() {
+        // bluetooth!
+
+        float alcoholSize = 200f;
+        float width = (alcoholSize / SOJU_VOLUME) * 307f;
+        Log.d("HORIZONTAL", String.valueOf(width));
+
+        barchart_top.setLayoutParams(new FrameLayout.LayoutParams((int) width, ViewGroup.LayoutParams.MATCH_PARENT));
+
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -159,5 +187,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getData(String key) {
+        SharedPreferences sf = getSharedPreferences("taeyoung", MODE_PRIVATE);
+        return sf.getString(key, "NONE");
     }
 }
