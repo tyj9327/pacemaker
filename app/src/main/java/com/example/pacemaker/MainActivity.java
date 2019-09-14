@@ -1,56 +1,91 @@
 package com.example.pacemaker;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
+import app.akexorcist.bluetotohspp.library.DeviceList;
 
 public class MainActivity extends AppCompatActivity {
 
-    //constants
+    // Constants
     private static final float SOJU_VOLUME = 360f;
     private static final float BEER_VOLUME_DEFAULT = 500f;
 
+    // Views
     private Toolbar toolbar;
     private TextView titleToolbar;
     private TextView name;
     private TextView alcoholPercent;
     private float alcoholBarSize;
+    private Button btConnectButton;
+    private Button btSendData;
 
     // Charts
-    private LineChart lineChart;
-    private HorizontalBarChart horizontalBarChart;
+    private CombinedChart combinedChart;
     private FrameLayout barchart_top;
-    private FrameLayout barchart_bottom;
 
+    // ChartData
+    private int count;
+
+    // Bluetooth
+    BluetoothAdapter bluetoothAdapter;
+    Set<BluetoothDevice> pairedDevices;
+    List<String> pairedDevicesList;
+    Handler bluetoothHandler;
+    BluetoothSPP btSPP;
+
+    //Data
+    public String receivedData;
+    public String outgoingData;
+    private String userAlcoholCapacity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +93,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         findViews();
         settingToolbar();
-        settingLineChart();
-
+        settingCombinedChart();
+        settingBlueTooth();
+        setHorizontalBarChart();
         String user_info = getData("USER_NAME") + " " + getData("USER_GENDER");
         name.setText(user_info);
-        setHorizontalBarChart();
+
 
 
     }
@@ -70,11 +106,14 @@ public class MainActivity extends AppCompatActivity {
     private void findViews() {
         toolbar = findViewById(R.id.toolbar);
         titleToolbar = findViewById(R.id.title_toolbar);
-        lineChart = findViewById(R.id.line_chart);
-        barchart_bottom = findViewById(R.id.barchart_back);
+//        lineChart = findViewById(R.id.line_chart);
         barchart_top = findViewById(R.id.barchart_top);
         name = findViewById(R.id.main_name);
         alcoholPercent = findViewById(R.id.main_bar_percent);
+        btConnectButton = findViewById(R.id.bluetooth_connect);
+        btSendData = findViewById(R.id.bt_send_data);
+//        barChart = findViewById(R.id.bar_chart);
+        combinedChart = findViewById(R.id.combined_chart);
 
     }
 
@@ -97,62 +136,216 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void settingLineChart() {
-        List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 1));
-        entries.add(new Entry(2, 2));
-        entries.add(new Entry(3, 5));
-        entries.add(new Entry(4, 7));
-        entries.add(new Entry(5, 10));
-        entries.add(new Entry(6, 13));
+    private void settingCombinedChart() {
 
-        LineDataSet lineDataSet = new LineDataSet(entries, "속성값");
-        lineDataSet.setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
-        lineDataSet.setCircleColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
-        lineDataSet.setCircleColorHole(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+        Log.d("taeyoung", "settingCombinedChart");
 
-        LineData lineData = new LineData(lineDataSet);
+        count = 10;
 
-        XAxis xAxis = lineChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTextColor(Color.BLACK);
-        xAxis.enableGridDashedLine(8, 24, 0);
+        combinedChart.getDescription().setEnabled(false);
+        combinedChart.setBackgroundColor(Color.WHITE);
+        combinedChart.setDrawGridBackground(false);
+        combinedChart.setDrawBarShadow(false);
+        combinedChart.setHighlightFullBarEnabled(false);
 
-        YAxis yLAxis = lineChart.getAxisLeft();
-        yLAxis.setTextColor(Color.BLACK);
+        combinedChart.setDrawOrder(new CombinedChart.DrawOrder[]{
+                CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE
+        });
 
-        YAxis yRAxis = lineChart.getAxisRight();
-        yRAxis.setDrawLabels(false);
-        yRAxis.setDrawAxisLine(false);
-        yRAxis.setDrawGridLines(false);
+        Legend l = combinedChart.getLegend();
+        l.setWordWrapEnabled(true);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
 
-        Description description = new Description();
-        description.setText("Description");
+        YAxis rightAxis = combinedChart.getAxisRight();
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-        lineChart.setDoubleTapToZoomEnabled(false);
-        lineChart.setDrawGridBackground(false);
+        YAxis leftAxis = combinedChart.getAxisLeft();
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-        lineChart.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
-        lineChart.setDescription(description);
-        lineChart.animateY(2000, Easing.EasingOption.EaseInCubic);
-        lineChart.setData(lineData);
-        lineChart.invalidate();
+        XAxis xAxis = combinedChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTH_SIDED);
+        xAxis.setAxisMinimum(0);
+        xAxis.setGranularity(1f);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                String[] format = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"};
+                Log.d("taeyoung", "format value: " + value);
+                return format[(int) value];
+            }
+        });
+
+        CombinedData cData = new CombinedData();
+
+        cData.setData(generateLineData());
+        cData.setData(generateBarData());
+
+        xAxis.setAxisMaximum(cData.getXMax() + 0.25f);
+
+        combinedChart.setData(cData);
+        combinedChart.notifyDataSetChanged();
+        combinedChart.invalidate();
+    }
+
+    private LineData generateLineData() {
+        LineData lineData = new LineData();
+
+        ArrayList<Entry> entries = new ArrayList<>();
+        float[] datas = {30, 50, 100, 120, 150, 180, 280, 300, 330, 400};
+        for(int index = 0; index < count; index++) {
+            entries.add(new Entry(index + 1f, datas[index]));
+        }
+
+        LineDataSet set = new LineDataSet(entries, "Line DataSet");
+        set.setColor(R.color.background_start);
+        set.setLineWidth(4f);
+        set.setCircleColor(R.color.colorPrimary);
+        set.setCircleRadius(5f);
+        set.setFillColor(R.color.colorAccent);
+        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setDrawValues(true);
+        set.setValueTextSize(10f);
+        set.setValueTextColor(R.color.colorAccent);
+
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        lineData.addDataSet(set);
+        return lineData;
 
     }
 
-    private void settingHorizontalBarChart() {
-        List<BarEntry> entries = new ArrayList<>();
-        BarEntry entry = new BarEntry(1, 1.7f);
-        entries.add(1, entry);
+    private BarData generateBarData() {
+        ArrayList<BarEntry> entries = new ArrayList<>();
 
-        BarDataSet barDataSet = new BarDataSet(entries, "label");
-        barDataSet.setBarShadowColor(ContextCompat.getColor(getApplicationContext(), R.color.background_end));
+        float[] datas = {30, 20, 50, 20, 30, 30, 100, 20, 30, 70};
+        for(int index = 0; index < count; index++) {
+            entries.add(new BarEntry(index + 1f, datas[index]));
+        }
 
-        BarData barData = new BarData(barDataSet);
+        BarDataSet set = new BarDataSet(entries, "BAR");
+        set.setColor(Color.rgb(60, 220, 78));
+        set.setValueTextColor(Color.rgb(60, 220, 78));
+        set.setValueTextSize(10f);
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+        float groupSpace = 0.06f;
+        float barSpace = 0.02f;
+        float barWidth = 0.45f;
+
+        BarData d = new BarData(set);
+        d.setBarWidth(barWidth);
+//        d.groupBars(0, groupSpace, barSpace);
+
+        return d;
+    }
 
 
+    private void settingBlueTooth() {
+        btSPP = new BluetoothSPP(this);
 
-//        BarChart.
+        if(!btSPP.isBluetoothAvailable()) {
+            Toast.makeText(getApplicationContext(), "Bluetooth 사용 불가", Toast.LENGTH_SHORT).show();
+        }
+
+        btSPP.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
+            @Override
+            public void onDataReceived(byte[] data, String message) {
+                receivedData = message;
+                Toast.makeText(MainActivity.this, "수신 DATA: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btSPP.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
+            @Override
+            public void onDeviceConnected(String name, String address) {
+                btConnectButton.setText("BT해제");
+                Toast.makeText(getApplicationContext(), "Connected to " + name + "\n" + address, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onDeviceDisconnected() {
+                btConnectButton.setText("BT연결");
+                Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onDeviceConnectionFailed() {
+                btConnectButton.setText("BT연결");
+                Toast.makeText(getApplicationContext(), "Unable to connect", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btConnectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(btSPP.getServiceState() == BluetoothState.STATE_CONNECTED) {
+                    btSPP.disconnect();
+                    btConnectButton.setText("BT연결");
+                }else  {
+                    Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                    btConnectButton.setText("BT연결중");
+                }
+
+
+            }
+        });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        btSPP.stopService();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!btSPP.isBluetoothEnabled()) {
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(intent, BluetoothState.REQUEST_ENABLE_BT);
+        }else {
+            if(!btSPP.isServiceAvailable()) {
+                btSPP.setupService();
+                btSPP.startService(BluetoothState.DEVICE_OTHER);
+                setDataUp();
+            }
+        }
+    }
+
+    private void setDataUp() {
+        btSendData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "데이터", Toast.LENGTH_SHORT).show();
+                btSPP.send(outgoingData, true);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
+            if(resultCode == Activity.RESULT_OK) {
+                btSPP.connect(data);
+            }
+        } else if(requestCode == BluetoothState.REQUEST_ENABLE_BT) {
+            if(resultCode == Activity.RESULT_OK) {
+                btSPP.setupService();
+                btSPP.startService(BluetoothState.DEVICE_OTHER);
+                setDataUp();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "Bluetooth was not enabled", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void setHorizontalBarChart() {

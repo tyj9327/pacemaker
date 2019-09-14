@@ -9,15 +9,44 @@
     android:orientation="vertical"
     tools:showIn="@layout/activity_main">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/line_chart"
+    <com.github.mikephil.charting.charts.CombinedChart
+        android:id="@+id/combined_chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:layout_weight="5.5"
+        android:gravity="center"
+        android:background="#ffffff"
         android:alpha="0.7"
-    />
+        />
+
+<!--    <FrameLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="5.5"-->
+<!--        android:background="#ffffff"-->
+<!--        >-->
+
+<!--        <com.github.mikephil.charting.charts.LineChart-->
+<!--            android:id="@+id/line_chart"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:alpha="0.5"-->
+<!--            />-->
+
+<!--        <com.github.mikephil.charting.charts.BarChart-->
+<!--            android:id="@+id/bar_chart"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:alpha="0.5"-->
+
+<!--            />-->
+
+<!--    </FrameLayout>-->
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,18 +76,41 @@
                 android:layout_marginBottom="20dp"
                 android:background="@color/background_start"
                 >
-                
-                <TextView
-                    android:id="@+id/main_name"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="1dp"
-                    android:text="구진선 님"
-                    android:textColor="@color/background_start"
-                    android:textSize="20sp"
+                    android:layout_height="20dp"
+                    android:orientation="horizontal"
+                    android:layout_weight="1.5"
                     android:background="#ffffff"
-                    android:gravity="center_vertical"
-                    android:layout_weight="1.5"/>
+                    android:layout_marginBottom="1dp"
+
+                    >
+
+                    <TextView
+                        android:id="@+id/main_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="장태영 님"
+                        android:textColor="@color/background_start"
+                        android:textSize="20sp"
+                        android:background="#ffffff"
+                        android:gravity="center_vertical" />
+
+                    <Button
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/bluetooth_connect"
+                        android:text="BT연결"
+                        android:layout_marginStart="5dp"
+                        />
+
+                    <Button
+                        android:text="DATA보내기"
+                        android:layout_marginStart="5dp"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/bt_send_data"/>
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"

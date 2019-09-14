@@ -10,12 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import static java.lang.Float.parseFloat;
 
 public class FragmentC extends Fragment {
 
@@ -33,9 +36,20 @@ public class FragmentC extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setPreference(v, editText.getText().toString());
-                Intent intent = new Intent(getContext(), StartActivity.class);
-                startActivity(intent);
+                String alcoholCapacity = editText.getText().toString();
+                if(alcoholCapacity.equals("")){
+                    Toast.makeText(getContext(),"주량을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }else{
+                    try {
+                        float alcoholCapacityFloat = Float.parseFloat(alcoholCapacity);
+                    }catch (Exception e) {
+                        Toast.makeText(getContext(), "정확한 숫자를 입력해주세요.",  Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    setPreference(v, alcoholCapacity);
+                    Intent intent = new Intent(getContext(), StartActivity.class);
+                    startActivity(intent);
+                }
 
             }
         });
@@ -46,7 +60,7 @@ public class FragmentC extends Fragment {
     private void setPreference(View v, String capacity) {
         SharedPreferences sf = v.getContext().getSharedPreferences("taeyoung", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sf.edit();
-        editor.putString("USER_ALCOHOL", capacity);
+        editor.putString("USER_ALCOHOL_CAPACITY", capacity);
         editor.apply();
     }
 }

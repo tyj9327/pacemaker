@@ -42,6 +42,7 @@ public class AccountActivity extends AppCompatActivity {
     }
 
     private void setProgressBar() {
+
         progressBar.setBackgroundColor(getResources().getColor(R.color.background_end));
         progressBar.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.background_start)));
         progressBar.setProgress(7);

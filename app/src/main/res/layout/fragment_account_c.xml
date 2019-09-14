@@ -37,7 +37,7 @@
             android:layout_gravity="center_horizontal"
             android:backgroundTint="@color/background_start"
             android:autofillHints="0.0"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:gravity="center"
             />
 
@@ -46,7 +46,7 @@
             android:layout_height="match_parent"
             android:text="병"
             android:textColor="@color/background_start"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:layout_gravity="bottom"
             android:gravity="center"
             />

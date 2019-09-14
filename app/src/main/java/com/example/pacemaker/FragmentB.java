@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +43,7 @@ public class FragmentB extends Fragment {
         maleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                v.setBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.background_end));
+
                 gender = "MALE";
 
             }
@@ -60,13 +61,18 @@ public class FragmentB extends Fragment {
             @Override
             public void onClick(View v) {
 
-                setPreference(v, gender);
+                if(gender.equals("NONE")){
+                    Toast.makeText(getContext(), "성별을 선택해주세요.", Toast.LENGTH_SHORT).show();
+                } else {
+                    setPreference(v, gender);
 
-                FragmentC fragmentC = new FragmentC();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_layout, fragmentC);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                    FragmentC fragmentC = new FragmentC();
+                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment_layout, fragmentC);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+
             }
         });
 
