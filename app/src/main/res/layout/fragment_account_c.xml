@@ -14,6 +14,7 @@
         />
 
     <TextView
+        android:id="@+id/alcohol_type"
         android:layout_width="61dp"
         android:layout_height="27.5dp"
         android:background="@drawable/oval"
@@ -30,6 +31,7 @@
         android:layout_gravity="center_horizontal">
 
         <EditText
+            android:id="@+id/alcohol_capacity"
             android:layout_width="68.5dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

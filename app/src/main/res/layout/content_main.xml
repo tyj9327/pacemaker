@@ -80,13 +80,13 @@
                     <FrameLayout
                         android:id="@+id/barchart_back"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="30dp"
                         android:background="@drawable/barchart_back_rounded">
 
                         <FrameLayout
                             android:orientation="horizontal"
                             android:id="@+id/barchart_top"
-                            android:layout_width="30dp"
+                            android:layout_width="153.5dp"
                             android:layout_height="match_parent"
                             android:background="@drawable/barchart_top_rounded"
                             android:layout_gravity="start">
@@ -95,7 +95,7 @@
                                 android:id="@+id/main_bar_percent"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:text="10%"
+                                android:text="50%"
                                 android:layout_gravity="center_horizontal|center_vertical"
                                 android:gravity="center_horizontal|center_vertical"
                                 android:textSize="15sp"
@@ -128,6 +128,17 @@
                             android:layout_width="40dp"
                             android:layout_height="45dp"
                             android:src="@drawable/cupicon" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2병\n720ml"
+                            android:textSize="12sp"
+                            android:gravity="center"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@color/background_start"/>
+
 
                     </FrameLayout>
 
