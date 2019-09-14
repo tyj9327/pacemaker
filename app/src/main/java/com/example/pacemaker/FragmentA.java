@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,16 +33,23 @@ public class FragmentA extends Fragment {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sf = v.getContext().getSharedPreferences("taeyoung", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sf.edit();
-                editor.putString("USER_NAME", nameText.getText().toString());
-                editor.apply();
 
-                FragmentB fragmentB = new FragmentB();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_layout, fragmentB);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                String name = nameText.getText().toString();
+
+                if(name.equals("")) {
+                    Toast.makeText(getContext(), "이름을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                } else{
+                    SharedPreferences sf = v.getContext().getSharedPreferences("taeyoung", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sf.edit();
+                    editor.putString("USER_NAME", name);
+                    editor.apply();
+
+                    FragmentB fragmentB = new FragmentB();
+                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment_layout, fragmentB);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
             }
         });
 
