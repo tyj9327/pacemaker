@@ -9,43 +9,22 @@
     android:orientation="vertical"
     tools:showIn="@layout/activity_main">
 
-    <com.github.mikephil.charting.charts.CombinedChart
-        android:id="@+id/combined_chart"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5.5"
-        android:gravity="center"
-        android:background="#ffffff"
-        android:alpha="0.7"
-        />
+        android:background="@drawable/rectangle"
+        >
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/combined_chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_margin="5dp"
+            android:visibility="visible"
+            />
 
-<!--    <FrameLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="5.5"-->
-<!--        android:background="#ffffff"-->
-<!--        >-->
-
-<!--        <com.github.mikephil.charting.charts.LineChart-->
-<!--            android:id="@+id/line_chart"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:gravity="center_vertical"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:alpha="0.5"-->
-<!--            />-->
-
-<!--        <com.github.mikephil.charting.charts.BarChart-->
-<!--            android:id="@+id/bar_chart"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:gravity="center_vertical"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:alpha="0.5"-->
-
-<!--            />-->
-
-<!--    </FrameLayout>-->
+    </FrameLayout>
 
 
     <LinearLayout
@@ -182,6 +161,7 @@
                             android:src="@drawable/cupicon" />
 
                         <TextView
+                            android:id="@+id/horizontal_chart_capacity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="2병\n720ml"
@@ -190,6 +170,21 @@
                             android:layout_gravity="end"
                             android:layout_marginTop="5dp"
                             android:textColor="@color/background_start"/>
+
+                        <EditText
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="bottom|center_horizontal"
+                            android:id="@+id/for_test_edit_text"
+                            />
+
+                        <Button
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:text="제출"
+                            android:layout_gravity="bottom|end"
+                            android:id="@+id/submit_test"
+                            />
 
 
                     </FrameLayout>
