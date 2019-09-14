@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -46,6 +47,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.skydoves.colorpickerview.ColorPickerView;
+import com.skydoves.colorpickerview.listeners.ColorListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btSendData;
     private Button testSubmit;
     private EditText testDataEditText;
+    private ColorPickerView colorPicker;
+    private FrameLayout bottomLayout;
 
     // Charts
     private CombinedChart combinedChart;
@@ -122,6 +127,13 @@ public class MainActivity extends AppCompatActivity {
         stackedTestData = testData;
         settingCombinedChart();
         setHorizontalBarChart();
+        colorPicker.setColorListener(new ColorListener() {
+            @Override
+            public void onColorSelected(int color, boolean fromUser) {
+                
+                bottomLayout.setBackgroundColor(color);
+            }
+        });
 
         // for Test ( change to Bluetooth incoming data afterward )
         testSubmit.setOnClickListener(new View.OnClickListener() {
@@ -156,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
         btSendData = findViewById(R.id.bt_send_data);
         combinedChart = findViewById(R.id.combined_chart);
         horizontalBarCapacity = findViewById(R.id.horizontal_chart_capacity);
+        colorPicker = findViewById(R.id.color_picker_view);
+        bottomLayout = findViewById(R.id.bottom_frame_layout);
 
         // test
         testSubmit = findViewById(R.id.submit_test);

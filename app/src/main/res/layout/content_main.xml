@@ -150,7 +150,8 @@
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/bottom_frame_layout">
 
                         <ImageView
                             android:layout_marginTop="20dp"
@@ -159,6 +160,15 @@
                             android:layout_width="40dp"
                             android:layout_height="45dp"
                             android:src="@drawable/cupicon" />
+
+                        <com.skydoves.colorpickerview.ColorPickerView
+                            android:id="@+id/color_picker_view"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginStart="50dp"
+                            android:layout_gravity="center_vertical"
+                            app:palette="@drawable/palette"
+                            app:selector="@drawable/wheel" />
 
                         <TextView
                             android:id="@+id/horizontal_chart_capacity"
