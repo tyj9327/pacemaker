@@ -1,5 +1,6 @@
 package com.example.pacemaker;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -34,25 +36,28 @@ public class FragmentB extends Fragment {
         ImageView nextButton = (ImageView) view.findViewById(R.id.next_icon_b);
         Button maleButton = (Button) view.findViewById(R.id.button_male);
         Button femaleButton = (Button) view.findViewById(R.id.button_female);
+        final View maleChecked = (View) view.findViewById(R.id.male_checked);
+        final View femaleChecked = (View) view.findViewById(R.id.female_checked);
 
-        maleButton.setFocusable(true);
-        maleButton.setFocusableInTouchMode(true);
-        femaleButton.setFocusable(true);
-        femaleButton.setFocusableInTouchMode(true);
+
 
         maleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 gender = "MALE";
+                maleChecked.setVisibility(View.VISIBLE);
+                femaleChecked.setVisibility(View.INVISIBLE);
 
             }
         });
+
 
         femaleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 gender = "FEMALE";
+                femaleChecked.setVisibility(View.VISIBLE);
+                maleChecked.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -68,8 +73,8 @@ public class FragmentB extends Fragment {
 
                     FragmentC fragmentC = new FragmentC();
                     FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment_layout, fragmentC);
-                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.replace(R.id.fragment_layout, fragmentC, "FRAGMENT_C");
+                    fragmentTransaction.addToBackStack("FRAGMENT_C");
                     fragmentTransaction.commit();
                 }
 
@@ -79,6 +84,7 @@ public class FragmentB extends Fragment {
         return view;
 
     }
+
 
     private void setPreference(View v, String gender) {
         SharedPreferences sf = v.getContext().getSharedPreferences("taeyoung", Context.MODE_PRIVATE);

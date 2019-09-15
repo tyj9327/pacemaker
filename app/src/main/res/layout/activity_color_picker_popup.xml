@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ColorPickerPopupActivity"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="색상 선택"
+        android:textColor="@color/background_start"
+        android:textSize="20sp"
+        android:gravity="center"
+        />
+
+    <com.skydoves.colorpickerview.ColorPickerView
+        android:id="@+id/color_picker_popup_view"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center_horizontal"
+        app:palette="@drawable/palette"
+        app:selector="@drawable/wheel" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|center_horizontal"
+        >
+
+        <Button
+            android:id="@+id/color_picker_cancel"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:layout_height="match_parent"
+            android:text="취소"
+            android:background="@color/background_end"
+            />
+
+        <Button
+            android:id="@+id/color_picker_apply"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="3dp"
+            android:layout_height="match_parent"
+            android:text="적용하기"
+            android:background="@color/background_end"
+            />
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
