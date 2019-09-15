@@ -1,8 +1,10 @@
 package com.example.pacemaker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -23,6 +25,8 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -46,6 +50,11 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.ColorPickerView;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
+import com.skydoves.colorpickerview.listeners.ColorListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private static final float SOJU_VOLUME = 360f;
     private static final float BEER_VOLUME_DEFAULT = 500f;
     private static final String TAG = "taeyoung";
+    private static final int COLOR_PICKER_REQUEST_CODE = 3000;
 
     // Views
     private Toolbar toolbar;
@@ -77,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btSendData;
     private Button testSubmit;
     private EditText testDataEditText;
+    private ImageView colorPickerPopup;
+    private FrameLayout bottomLayout;
 
     // Charts
     private CombinedChart combinedChart;
@@ -99,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
 
     //Data
     public String receivedData;
-    public String outgoingData;
+    public int outGoingColorData = R.color.background_start;
+    public String outGoingData = String.valueOf(outGoingColorData); // color
     private String userAlcoholCapacity;
 
     //etc
@@ -112,16 +125,24 @@ public class MainActivity extends AppCompatActivity {
         findViews();
         settingToolbar();
         settingBlueTooth();
-        String user_info = getData("USER_NAME") + " " + getData("USER_GENDER");
+        String user_info = getData("USER_NAME") + " " + "님"; //+ getData("USER_GENDER");
         name.setText(user_info);
 
         // initial value for the chart ( test )
         updateCurrentTime();
         xAxisFormat.add(currentTime);
         testData = 0;
-        stackedTestData = testData;
+        stackedTestData = testData; 
         settingCombinedChart();
         setHorizontalBarChart();
+        setColorPickerPopup();
+//        colorPicker.setColorListener(new ColorListener() {
+//            @Override
+//            public void onColorSelected(int color, boolean fromUser) {
+//
+//                bottomLayout.setBackgroundColor(color);
+//            }
+//        });
 
         // for Test ( change to Bluetooth incoming data afterward )
         testSubmit.setOnClickListener(new View.OnClickListener() {
@@ -156,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
         btSendData = findViewById(R.id.bt_send_data);
         combinedChart = findViewById(R.id.combined_chart);
         horizontalBarCapacity = findViewById(R.id.horizontal_chart_capacity);
+        colorPickerPopup = findViewById(R.id.color_picker_popup);
+        bottomLayout = findViewById(R.id.bottom_frame_layout);
 
         // test
         testSubmit = findViewById(R.id.submit_test);
@@ -370,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "데이터", Toast.LENGTH_SHORT).show();
-                btSPP.send(outgoingData, true);
+                btSPP.send(outGoingData, true);
             }
         });
     }
@@ -378,6 +401,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == COLOR_PICKER_REQUEST_CODE) {
+            if(resultCode == RESULT_OK) {
+                outGoingColorData = data.getIntExtra("pickedColor", outGoingColorData);
+                outGoingData = String.valueOf(outGoingColorData);
+                btSPP.send(outGoingData, true);
+                Toast.makeText(getApplicationContext(), "색: " + outGoingData, Toast.LENGTH_SHORT).show();
+            }
+        }
         if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
             if(resultCode == Activity.RESULT_OK) {
                 btSPP.connect(data);
@@ -392,6 +423,42 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Bluetooth was not enabled", Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+
+    private void setColorPickerPopup() {
+        colorPickerPopup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ColorPickerDialog.Builder colorPickerDialog = new ColorPickerDialog.Builder(MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+
+                colorPickerDialog.setTitle("LED 색상 선택")
+                        .setPreferenceName("MyColorPickerDialog")
+                        .setPositiveButton(getString(R.string.confirm),
+                                new ColorEnvelopeListener() {
+                                    @Override
+                                    public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                                        outGoingData = envelope.getHexCode();
+                                        btSPP.send(outGoingData, true);
+                                        Toast.makeText(getApplicationContext(), "색: " + outGoingData, Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                        .setNegativeButton(getString(R.string.cancel),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            })
+                        .attachAlphaSlideBar(false) // default is true. If false, do not show the AlphaSlideBar.
+                        .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
+                        .show();
+
+//                Intent colorPickerPopupIntent = new Intent(getApplicationContext(), ColorPickerPopupActivity.class);
+//                colorPickerPopupIntent.putExtra("CurrentColor", outGoingColorData);
+//                startActivityForResult(colorPickerPopupIntent, 3000);
+            }
+        });
     }
 
     private void setHorizontalBarChart() {

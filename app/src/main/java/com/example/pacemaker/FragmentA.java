@@ -46,8 +46,8 @@ public class FragmentA extends Fragment {
 
                     FragmentB fragmentB = new FragmentB();
                     FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment_layout, fragmentB);
-                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.replace(R.id.fragment_layout, fragmentB, "FRAGMENT_B");
+                    fragmentTransaction.addToBackStack("FRAGMENT_B");
                     fragmentTransaction.commit();
                 }
             }

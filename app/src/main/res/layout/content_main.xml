@@ -76,7 +76,7 @@
                         android:gravity="center_vertical" />
 
                     <Button
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:id="@+id/bluetooth_connect"
                         android:text="BT연결"
@@ -150,7 +150,8 @@
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:id="@+id/bottom_frame_layout">
 
                         <ImageView
                             android:layout_marginTop="20dp"
@@ -159,6 +160,25 @@
                             android:layout_width="40dp"
                             android:layout_height="45dp"
                             android:src="@drawable/cupicon" />
+
+<!--                        <com.skydoves.colorpickerview.ColorPickerView-->
+<!--                            android:id="@+id/color_picker_view"-->
+<!--                            android:layout_width="60dp"-->
+<!--                            android:layout_height="60dp"-->
+<!--                            android:layout_marginStart="50dp"-->
+<!--                            android:layout_gravity="center_vertical"-->
+<!--                            app:palette="@drawable/palette"-->
+<!--                            app:selector="@drawable/wheel" />-->
+
+                        <ImageView
+                            android:id="@+id/color_picker_popup"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginStart="50dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/color_picker_img"
+                            />
+
 
                         <TextView
                             android:id="@+id/horizontal_chart_capacity"
@@ -176,6 +196,7 @@
                             android:layout_height="50dp"
                             android:layout_gravity="bottom|center_horizontal"
                             android:id="@+id/for_test_edit_text"
+                            android:textColor="@color/background_start"
                             />
 
                         <Button
@@ -183,6 +204,7 @@
                             android:layout_height="50dp"
                             android:text="제출"
                             android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="55dp"
                             android:id="@+id/submit_test"
                             />
 

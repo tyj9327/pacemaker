@@ -19,20 +19,57 @@
         android:orientation="horizontal"
         android:layout_gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/button_male"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/male"
-            />
+            android:orientation="vertical"
+            android:layout_marginEnd="7dp">
 
-        <Button
-            android:id="@+id/button_female"
+            <Button
+                android:id="@+id/button_male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/male"
+                />
+
+            <View
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/male_checked"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@drawable/button_clicked_rectangle"
+                android:visibility="invisible"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/female"
-            android:layout_marginStart="14dp"
-            />
+            android:orientation="vertical"
+            android:layout_marginStart="7dp">
+
+            <Button
+                android:id="@+id/button_female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/female"
+                android:layout_marginStart="7dp"
+                />
+
+            <View
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/female_checked"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@drawable/button_clicked_rectangle"
+                android:visibility="invisible"/>
+            </LinearLayout>
+
 
     </LinearLayout>
 
