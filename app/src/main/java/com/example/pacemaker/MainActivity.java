@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout bottomLayout;
     private ImageView sojuSelect;
     private ImageView beerSelect;
+    private View cupColor;
 
     // Charts
     private CombinedChart combinedChart;
@@ -116,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
     public int outGoingColorData = R.color.background_start;
     public String outGoingData = String.valueOf(outGoingColorData); // color
     private String userAlcoholCapacity;
+    private int percentage = 0;
 
     //etc
     public String currentTime;
@@ -178,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
         bottomLayout = findViewById(R.id.bottom_frame_layout);
         sojuSelect = findViewById(R.id.soju_select_img);
         beerSelect = findViewById(R.id.beer_select_img);
+        cupColor = findViewById(R.id.cup_color_rectangle);
 
         // test
         testSubmit = findViewById(R.id.submit_test);
@@ -198,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, StartActivity.class));
+                startActivity(new Intent(MainActivity.this, AccountActivity.class));
             }
         });
 
@@ -318,12 +321,17 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Bluetooth 사용 불가", Toast.LENGTH_SHORT).show();
         }
 
+        /**
+         * 블루투스 데이터 입력이 확인된다면 이 파트에 data receive 관련 함수 구현
+         *
+         */
         btSPP.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
             @Override
             public void onDataReceived(byte[] data, String message) {
                 receivedData = message;
 
                 Toast.makeText(MainActivity.this, "수신 DATA: " + message, Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -439,6 +447,8 @@ public class MainActivity extends AppCompatActivity {
                                     public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
                                         outGoingData = envelope.getHexCode();
                                         btSPP.send(outGoingData, true);
+                                        cupColor.setBackgroundColor(envelope.getColor());
+                                        cupColor.setAlpha((float) percentage / 100f);
                                         Toast.makeText(getApplicationContext(), "색: " + outGoingData, Toast.LENGTH_SHORT).show();
                                     }
                                 })
@@ -475,7 +485,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         float width = 1025f * (stackedTestData / volume);
-        int percentage = (int) (stackedTestData / volume * 100);
+        percentage = (int) (stackedTestData / volume * 100);
         Log.d(TAG, "user_alcohol_capacity: " + userAlcoholCapacity);
         Log.d(TAG, "volume: " + volume);
         Log.d(TAG, "width: " + width);
@@ -491,6 +501,13 @@ public class MainActivity extends AppCompatActivity {
             alcoholPercent.setVisibility(View.VISIBLE);
         }
         barchart_top.setLayoutParams(new FrameLayout.LayoutParams((int) width, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        cupColor.setAlpha((float) percentage / 100f);
+        // opacity 수정해서 새로운 색 데이터 전송
+//        if(btSPP != null) {
+//            btSPP.send(outGoingData, true);
+//        }
+
     }
 
     private void selectWhichAlcoholToDrink() {

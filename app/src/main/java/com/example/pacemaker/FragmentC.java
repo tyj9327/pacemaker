@@ -38,8 +38,10 @@ public class FragmentC extends Fragment {
             public void onClick(View v) {
                 String alcoholCapacity = editText.getText().toString();
                 if(alcoholCapacity.equals("")){
-                    Toast.makeText(getContext(),"주량을 입력해주세요.", Toast.LENGTH_SHORT).show();
-                }else{
+                    Toast.makeText(getContext(),"주량을 입력해주세요!", Toast.LENGTH_SHORT).show();
+                } else if(alcoholCapacity.equals("0")){
+                    Toast.makeText(getContext(), "한잔도...못드시나요..?ㅠㅠ", Toast.LENGTH_SHORT).show();
+                } else{
                     try {
                         float alcoholCapacityFloat = Float.parseFloat(alcoholCapacity);
                     }catch (Exception e) {

@@ -198,6 +198,17 @@
                         android:layout_weight="1"
                         android:id="@+id/bottom_frame_layout">
 
+                        <View
+                            android:id="@+id/cup_color_rectangle"
+                            android:layout_width="20dp"
+                            android:layout_height="30dp"
+                            android:background="@color/background_start"
+                            android:alpha="1"
+                            android:layout_marginBottom="9dp"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="15dp"
+                            />
+
                         <ImageView
                             android:layout_marginTop="0dp"
                             android:layout_marginStart="5dp"
