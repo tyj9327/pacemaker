@@ -73,13 +73,60 @@
                         android:textColor="@color/background_start"
                         android:textSize="20sp"
                         android:background="#ffffff"
+                        android:layout_gravity="center_vertical"
                         android:gravity="center_vertical" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        >
+                        <ImageView
+                            android:id="@+id/soju_select_img"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/soju_1"
+                            android:layout_marginEnd="80dp"
+                            android:layout_gravity="end|center_vertical"
+                            />
+
+                        <ImageView
+                            android:id="@+id/beer_select_img"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/beer_1"
+                            android:layout_gravity="end|center_vertical"
+                            />
+
+                    </FrameLayout>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:background="#ffffff"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:text="오늘의 음주량 정보"
+                        android:textColor="@color/background_start"
+                        android:textSize="12sp"
+                        android:background="#ffffff"/>
 
                     <Button
                         android:layout_width="80dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="30dp"
                         android:id="@+id/bluetooth_connect"
                         android:text="BT연결"
+                        android:textSize="12sp"
                         android:layout_marginStart="5dp"
                         />
 
@@ -87,19 +134,12 @@
                         android:text="DATA보내기"
                         android:layout_marginStart="5dp"
                         android:layout_width="100dp"
-                        android:layout_height="50dp"
+                        android:layout_height="30dp"
+                        android:textSize="12sp"
                         android:id="@+id/bt_send_data"/>
+
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="오늘의 음주량 정보"
-                    android:textColor="@color/background_start"
-                    android:textSize="12sp"
-                    android:layout_weight="1"
-                    android:background="#ffffff"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -170,15 +210,15 @@
 <!--                            app:palette="@drawable/palette"-->
 <!--                            app:selector="@drawable/wheel" />-->
 
+
                         <ImageView
                             android:id="@+id/color_picker_popup"
                             android:layout_width="60dp"
                             android:layout_height="60dp"
-                            android:layout_marginStart="50dp"
+                            android:layout_marginTop="10dp"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/color_picker_img"
-                            />
-
+                            android:layout_marginStart="50dp"
+                            android:src="@drawable/color_picker_img" />
 
                         <TextView
                             android:id="@+id/horizontal_chart_capacity"

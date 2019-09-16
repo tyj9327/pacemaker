@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText testDataEditText;
     private ImageView colorPickerPopup;
     private FrameLayout bottomLayout;
+    private ImageView sojuSelect;
+    private ImageView beerSelect;
 
     // Charts
     private CombinedChart combinedChart;
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         findViews();
         settingToolbar();
-        settingBlueTooth();
+        //settingBlueTooth();
         String user_info = getData("USER_NAME") + " " + "님"; //+ getData("USER_GENDER");
         name.setText(user_info);
 
@@ -136,13 +138,6 @@ public class MainActivity extends AppCompatActivity {
         settingCombinedChart();
         setHorizontalBarChart();
         setColorPickerPopup();
-//        colorPicker.setColorListener(new ColorListener() {
-//            @Override
-//            public void onColorSelected(int color, boolean fromUser) {
-//
-//                bottomLayout.setBackgroundColor(color);
-//            }
-//        });
 
         // for Test ( change to Bluetooth incoming data afterward )
         testSubmit.setOnClickListener(new View.OnClickListener() {
@@ -179,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
         horizontalBarCapacity = findViewById(R.id.horizontal_chart_capacity);
         colorPickerPopup = findViewById(R.id.color_picker_popup);
         bottomLayout = findViewById(R.id.bottom_frame_layout);
+        sojuSelect = findViewById(R.id.soju_select_img);
+        beerSelect = findViewById(R.id.beer_select_img);
 
         // test
         testSubmit = findViewById(R.id.submit_test);
@@ -370,23 +367,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        btSPP.stopService();
+//        btSPP.stopService();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(!btSPP.isBluetoothEnabled()) {
-            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(intent, BluetoothState.REQUEST_ENABLE_BT);
-        }else {
-            if(!btSPP.isServiceAvailable()) {
-                btSPP.setupService();
-                btSPP.startService(BluetoothState.DEVICE_OTHER);
-                setDataUp();
-            }
-        }
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        if(!btSPP.isBluetoothEnabled()) {
+//            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//            startActivityForResult(intent, BluetoothState.REQUEST_ENABLE_BT);
+//        }else {
+//            if(!btSPP.isServiceAvailable()) {
+//                btSPP.setupService();
+//                btSPP.startService(BluetoothState.DEVICE_OTHER);
+//                setDataUp();
+//            }
+//        }
+//    }
 
     private void setDataUp() {
         btSendData.setOnClickListener(new View.OnClickListener() {
@@ -453,10 +450,6 @@ public class MainActivity extends AppCompatActivity {
                         .attachAlphaSlideBar(false) // default is true. If false, do not show the AlphaSlideBar.
                         .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
                         .show();
-
-//                Intent colorPickerPopupIntent = new Intent(getApplicationContext(), ColorPickerPopupActivity.class);
-//                colorPickerPopupIntent.putExtra("CurrentColor", outGoingColorData);
-//                startActivityForResult(colorPickerPopupIntent, 3000);
             }
         });
     }
@@ -483,8 +476,27 @@ public class MainActivity extends AppCompatActivity {
             alcoholPercent.setVisibility(View.VISIBLE);
         }
         barchart_top.setLayoutParams(new FrameLayout.LayoutParams((int) width, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
 
+    private void selectWhichAlcoholToDrink() {
+        sojuSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sojuSelect.setImageDrawable(getDrawable(R.drawable.soju_2));
+                beerSelect.setImageDrawable(getDrawable(R.drawable.beer_1));
 
+                setHorizontalBarChart();
+
+            }
+        });
+
+        beerSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sojuSelect.setImageDrawable(getDrawable(R.drawable.soju_1));
+                beerSelect.setImageDrawable(getDrawable(R.drawable.beer_2));
+            }
+        });
     }
 
     @Override

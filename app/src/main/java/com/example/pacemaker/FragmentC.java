@@ -49,6 +49,7 @@ public class FragmentC extends Fragment {
                     setPreference(v, alcoholCapacity);
                     Intent intent = new Intent(getContext(), StartActivity.class);
                     startActivity(intent);
+                    getActivity().finish();
                 }
 
             }
