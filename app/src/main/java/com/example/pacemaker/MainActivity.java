@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     //etc
     public String currentTime;
+    public String currentAlcohol = "SOJU";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         findViews();
         settingToolbar();
-        //settingBlueTooth();
+        settingBlueTooth();
         String user_info = getData("USER_NAME") + " " + "님"; //+ getData("USER_GENDER");
         name.setText(user_info);
 
@@ -136,8 +137,9 @@ public class MainActivity extends AppCompatActivity {
         testData = 0;
         stackedTestData = testData; 
         settingCombinedChart();
-        setHorizontalBarChart();
+        setHorizontalBarChart(currentAlcohol);
         setColorPickerPopup();
+        selectWhichAlcoholToDrink();
 
         // for Test ( change to Bluetooth incoming data afterward )
         testSubmit.setOnClickListener(new View.OnClickListener() {
@@ -146,16 +148,16 @@ public class MainActivity extends AppCompatActivity {
 
                 try{
                     testData = Float.valueOf(testDataEditText.getText().toString());
+                    stackedTestData += testData;
+                    count++;
+                    updateCurrentTime();
+                    xAxisFormat.add(currentTime);
+                    settingCombinedChart();
+                    setHorizontalBarChart(currentAlcohol);
                 } catch (Exception e){
                     Toast.makeText(getApplicationContext(), "Invalid Input", Toast.LENGTH_SHORT).show();
                 }
 
-                stackedTestData += testData;
-                count++;
-                updateCurrentTime();
-                xAxisFormat.add(currentTime);
-                settingCombinedChart();
-                setHorizontalBarChart();
 
             }
         });
@@ -269,14 +271,14 @@ public class MainActivity extends AppCompatActivity {
             entries.add(new Entry(index, lineChartData.get(index)));
         }
 
-        LineDataSet set = new LineDataSet(entries, "Line DataSet");
+        LineDataSet set = new LineDataSet(entries, "누적 음주량");
         set.setColor(R.color.background_start);
         set.setLineWidth(4f);
         set.setCircleColor(R.color.colorPrimary);
-        set.setCircleRadius(5f);
+        set.setCircleRadius(3f);
         set.setFillColor(R.color.colorAccent);
-        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set.setDrawValues(true);
+        set.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+        set.setDrawValues(false);
         set.setValueTextSize(10f);
         set.setValueTextColor(R.color.colorAccent);
 
@@ -294,9 +296,9 @@ public class MainActivity extends AppCompatActivity {
             entries.add(new BarEntry(index, barChartData.get(index)));
         }
 
-        BarDataSet set = new BarDataSet(entries, "BAR");
-        set.setColor(Color.rgb(60, 220, 78));
-        set.setValueTextColor(Color.rgb(60, 220, 78));
+        BarDataSet set = new BarDataSet(entries, "개별 음주량");
+        set.setColor(Color.rgb(255, 30, 77));
+        set.setValueTextColor(Color.rgb(255, 30, 77));
         set.setValueTextSize(10f);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
 
@@ -367,23 +369,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        btSPP.stopService();
+        btSPP.stopService();
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        if(!btSPP.isBluetoothEnabled()) {
-//            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//            startActivityForResult(intent, BluetoothState.REQUEST_ENABLE_BT);
-//        }else {
-//            if(!btSPP.isServiceAvailable()) {
-//                btSPP.setupService();
-//                btSPP.startService(BluetoothState.DEVICE_OTHER);
-//                setDataUp();
-//            }
-//        }
-//    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!btSPP.isBluetoothEnabled()) {
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(intent, BluetoothState.REQUEST_ENABLE_BT);
+        }else {
+            if(!btSPP.isServiceAvailable()) {
+                btSPP.setupService();
+                btSPP.startService(BluetoothState.DEVICE_OTHER);
+                setDataUp();
+            }
+        }
+    }
 
     private void setDataUp() {
         btSendData.setOnClickListener(new View.OnClickListener() {
@@ -454,23 +456,36 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setHorizontalBarChart() {
+    private void setHorizontalBarChart(String whichAlcohol) {
         // bluetooth!
 
+        float volume = 0f;
         float userAlcoholCapacity = Float.valueOf(getData("USER_ALCOHOL_CAPACITY"));
-        float volume = SOJU_VOLUME * userAlcoholCapacity;
-        float width = 1000f * (stackedTestData / volume);
+
+        if (whichAlcohol.equals("SOJU")) {
+            Log.d(TAG, "whichAlcohol: SOJU");
+            volume = SOJU_VOLUME * userAlcoholCapacity;
+            horizontalBarCapacity.setText(userAlcoholCapacity + "병\n" + volume + "ml");
+        } else if(whichAlcohol.equals("BEER")) {
+            Log.d(TAG, "whichAlcohol: BEER");
+            volume = SOJU_VOLUME * userAlcoholCapacity * 0.16f / 0.05f;
+            float beerCapacityBy500ML = (float) Math.floor(volume / 500f * 10) / 10;
+
+            horizontalBarCapacity.setText(beerCapacityBy500ML + "잔\n" + volume + "ml");
+        }
+
+        float width = 1025f * (stackedTestData / volume);
         int percentage = (int) (stackedTestData / volume * 100);
         Log.d(TAG, "user_alcohol_capacity: " + userAlcoholCapacity);
         Log.d(TAG, "volume: " + volume);
         Log.d(TAG, "width: " + width);
         Log.d(TAG, "percentage: " + percentage);
 
-        horizontalBarCapacity.setText(userAlcoholCapacity + "병\n" + volume + "ml");
+
 
 
         alcoholPercent.setText(percentage + "%");
-        if(percentage < 15) {
+        if(percentage < 13) {
             alcoholPercent.setVisibility(View.INVISIBLE);
         }else{
             alcoholPercent.setVisibility(View.VISIBLE);
@@ -484,9 +499,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sojuSelect.setImageDrawable(getDrawable(R.drawable.soju_2));
                 beerSelect.setImageDrawable(getDrawable(R.drawable.beer_1));
-
-                setHorizontalBarChart();
-
+                currentAlcohol = "SOJU";
+                setHorizontalBarChart(currentAlcohol);
             }
         });
 
@@ -495,6 +509,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sojuSelect.setImageDrawable(getDrawable(R.drawable.soju_1));
                 beerSelect.setImageDrawable(getDrawable(R.drawable.beer_2));
+                currentAlcohol = "BEER";
+                setHorizontalBarChart(currentAlcohol);
             }
         });
     }

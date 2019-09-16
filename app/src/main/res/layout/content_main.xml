@@ -15,6 +15,26 @@
         android:layout_weight="5.5"
         android:background="@drawable/rectangle"
         >
+
+        <Button
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/bluetooth_connect"
+            android:text="BT연결"
+            android:textSize="12sp"
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <Button
+            android:text="DATA보내기"
+            android:layout_marginStart="5dp"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:id="@+id/bt_send_data"
+            android:layout_gravity="end"/>
+
         <com.github.mikephil.charting.charts.CombinedChart
             android:id="@+id/combined_chart"
             android:layout_width="match_parent"
@@ -70,6 +90,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="장태영 님"
+                        android:textStyle="bold"
                         android:textColor="@color/background_start"
                         android:textSize="20sp"
                         android:background="#ffffff"
@@ -85,7 +106,7 @@
                             android:id="@+id/soju_select_img"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/soju_1"
+                            android:src="@drawable/soju_2"
                             android:layout_marginEnd="80dp"
                             android:layout_gravity="end|center_vertical"
                             />
@@ -121,22 +142,6 @@
                         android:textSize="12sp"
                         android:background="#ffffff"/>
 
-                    <Button
-                        android:layout_width="80dp"
-                        android:layout_height="30dp"
-                        android:id="@+id/bluetooth_connect"
-                        android:text="BT연결"
-                        android:textSize="12sp"
-                        android:layout_marginStart="5dp"
-                        />
-
-                    <Button
-                        android:text="DATA보내기"
-                        android:layout_marginStart="5dp"
-                        android:layout_width="100dp"
-                        android:layout_height="30dp"
-                        android:textSize="12sp"
-                        android:id="@+id/bt_send_data"/>
 
                 </LinearLayout>
 
@@ -194,29 +199,22 @@
                         android:id="@+id/bottom_frame_layout">
 
                         <ImageView
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="0dp"
                             android:layout_marginStart="5dp"
-                            android:layout_gravity="start"
+                            android:layout_gravity="start|bottom"
                             android:layout_width="40dp"
                             android:layout_height="45dp"
+                            android:layout_marginBottom="2dp"
                             android:src="@drawable/cupicon" />
-
-<!--                        <com.skydoves.colorpickerview.ColorPickerView-->
-<!--                            android:id="@+id/color_picker_view"-->
-<!--                            android:layout_width="60dp"-->
-<!--                            android:layout_height="60dp"-->
-<!--                            android:layout_marginStart="50dp"-->
-<!--                            android:layout_gravity="center_vertical"-->
-<!--                            app:palette="@drawable/palette"-->
-<!--                            app:selector="@drawable/wheel" />-->
 
 
                         <ImageView
                             android:id="@+id/color_picker_popup"
                             android:layout_width="60dp"
                             android:layout_height="60dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_gravity="center_vertical"
+                            android:layout_marginTop="0dp"
+                            android:layout_gravity="bottom"
+                            android:layout_marginBottom="-5dp"
                             android:layout_marginStart="50dp"
                             android:src="@drawable/color_picker_img" />
 

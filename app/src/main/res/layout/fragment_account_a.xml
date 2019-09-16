@@ -20,6 +20,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="66.75dp"
         android:autofillHints="Name"
+        android:gravity="center"
         android:backgroundTint="@color/background_start"
         />
 
