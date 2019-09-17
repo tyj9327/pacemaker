@@ -468,10 +468,10 @@ public class MainActivity extends AppCompatActivity {
 
         float width;
         if(stackedTestData / volume > 1) {
-            width = 1025f;
+            width = 512f;
             Toast.makeText(getApplicationContext(), "과음중입니다!", Toast.LENGTH_LONG).show();
         } else {
-            width = 1025f * (stackedTestData / volume);
+            width = 512f * (stackedTestData / volume);
         }
         percentage = (int) (stackedTestData / volume * 100);
         Log.d(TAG, "user_alcohol_capacity: " + userAlcoholCapacity);
