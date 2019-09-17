@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,6 +58,10 @@ import com.skydoves.colorpickerview.ColorPickerView;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 import com.skydoves.colorpickerview.listeners.ColorListener;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,10 +69,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
-import app.akexorcist.bluetotohspp.library.BluetoothSPP;
-import app.akexorcist.bluetotohspp.library.BluetoothState;
-import app.akexorcist.bluetotohspp.library.DeviceList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -106,11 +110,21 @@ public class MainActivity extends AppCompatActivity {
     private float stackedTestData;
 
     // Bluetooth
-    BluetoothAdapter bluetoothAdapter;
-    Set<BluetoothDevice> pairedDevices;
-    List<String> pairedDevicesList;
-    Handler bluetoothHandler;
-    BluetoothSPP btSPP;
+    BluetoothAdapter mBluetoothAdapter;
+    Set<BluetoothDevice> mPairedDevices;
+    List<String> mListPairedDevices;
+    Handler mBluetoothHandler;
+    ConnectedBluetoothThread mThreadConnectedBluetooth;
+    BluetoothDevice mBluetoothDevice;
+    BluetoothSocket mBluetoothSocket;
+
+    // Bluetooth constants
+    final static int BT_REQUEST_ENABLE = 1;
+    final static int BT_MESSAGE_READ = 2;
+    final static int BT_CONNECTING_STATUS = 3;
+    final static UUID BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+
 
     //Data
     public String receivedData;
@@ -124,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
     //etc
     public String currentTime;
     public String currentAlcohol = "SOJU";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +179,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mBluetoothHandler = new Handler(){
+            public void handleMessage(android.os.Message msg){
+                if(msg.what == BT_MESSAGE_READ){
+                    String readMessage = null;
+                    try {
+                        readMessage = new String((byte[]) msg.obj, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
     }
 
     private void findViews() {
@@ -187,6 +218,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void settingBlueTooth() {
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+    }
+
     private void settingToolbar() {
 
         setSupportActionBar(toolbar);
@@ -205,20 +242,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if(btSPP.getServiceState() == BluetoothState.STATE_CONNECTED) {
-                    btSPP.disconnect();
-                }else  {
-                    Intent intent = new Intent(getApplicationContext(), DeviceList.class);
-                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
-                }
+                listPairedDevices();
                 return false;
             }
         });
     }
+
 
     private void settingCombinedChart() {
 
@@ -327,108 +359,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void settingBlueTooth() {
-        btSPP = new BluetoothSPP(this);
-
-        if(!btSPP.isBluetoothAvailable()) {
-            Toast.makeText(getApplicationContext(), "Bluetooth 사용 불가", Toast.LENGTH_SHORT).show();
-        }
-
-        /**
-         * 블루투스 데이터 입력이 확인된다면 이 파트에 data receive 관련 함수 구현
-         *
-         */
-        btSPP.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
-            @Override
-            public void onDataReceived(byte[] data, String message) {
-                Log.d(TAG, "Bluetooth data received: " + message);
-                receivedData = message;
-
-                Toast.makeText(MainActivity.this, "수신 DATA: " + message, Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        btSPP.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
-            @Override
-            public void onDeviceConnected(String name, String address) {
-                //btConnectButton.setText("BT해제");
-                Toast.makeText(getApplicationContext(), "Connected to " + name + "\n" + address, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onDeviceDisconnected() {
-                //btConnectButton.setText("BT연결");
-                Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onDeviceConnectionFailed() {
-                //btConnectButton.setText("BT연결");
-                Toast.makeText(getApplicationContext(), "Unable to connect", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        btSPP.stopService();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(!btSPP.isBluetoothEnabled()) {
-            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(intent, BluetoothState.REQUEST_ENABLE_BT);
-        }else {
-            if(!btSPP.isServiceAvailable()) {
-                btSPP.setupService();
-                btSPP.startService(BluetoothState.DEVICE_OTHER);
-                setDataUp();
-            }
-        }
-    }
-
-    private void setDataUp() {
-//        btSendData.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(getApplicationContext(), "데이터", Toast.LENGTH_SHORT).show();
-//                btSPP.send(outGoingData, true);
-//            }
-//        });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == COLOR_PICKER_REQUEST_CODE) {
-            if(resultCode == RESULT_OK) {
-                outGoingColorData = data.getIntExtra("pickedColor", outGoingColorData);
-                outGoingData = String.valueOf(outGoingColorData);
-                btSPP.send(outGoingData, true);
-                Toast.makeText(getApplicationContext(), "색: " + outGoingData, Toast.LENGTH_SHORT).show();
-            }
-        }
-        if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
-            if(resultCode == Activity.RESULT_OK) {
-                btSPP.connect(data);
-            }
-        } else if(requestCode == BluetoothState.REQUEST_ENABLE_BT) {
-            if(resultCode == Activity.RESULT_OK) {
-                btSPP.setupService();
-                btSPP.startService(BluetoothState.DEVICE_OTHER);
-                setDataUp();
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), "Bluetooth was not enabled", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-    }
 
     private void setColorPickerPopup() {
         colorPickerPopup.setOnClickListener(new View.OnClickListener() {
@@ -449,8 +379,9 @@ public class MainActivity extends AppCompatActivity {
                                         for(int colorDataInt : outGoingColorDataIntArray) {
                                             firstData += colorDataInt + " ";
                                         }
+                                        mThreadConnectedBluetooth.write(firstData);
 
-                                        btSPP.send(firstData, true);
+                                        //btSPP.send(firstData, true);
                                         cupColor.setBackgroundColor(envelope.getColor());
                                         cupColor.setAlpha((float) percentage / 100f);
                                         Toast.makeText(getApplicationContext(), "설정 직후 색: " + firstData, Toast.LENGTH_SHORT).show();
@@ -466,7 +397,8 @@ public class MainActivity extends AppCompatActivity {
                                         for(int colorDataInt : outGoingColorDataIntArray) {
                                             secondData += colorDataInt + " ";
                                         }
-                                        btSPP.send(secondData, true);
+                                        mThreadConnectedBluetooth.write(secondData);
+                                        //btSPP.send(secondData, true);
                                         Toast.makeText(getApplicationContext(), "색: " + secondData, Toast.LENGTH_SHORT).show();
                                     }
                                 })
@@ -588,4 +520,145 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sf = getSharedPreferences("taeyoung", MODE_PRIVATE);
         return sf.getString(key, "NONE");
     }
+
+
+    /**
+     * Bluetooth Module Setting
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case BT_REQUEST_ENABLE:
+                if (resultCode == RESULT_OK) { // 블루투스 활성화를 확인을 클릭하였다면
+                    Toast.makeText(getApplicationContext(), "블루투스 활성화", Toast.LENGTH_LONG).show();
+
+                } else if (resultCode == RESULT_CANCELED) { // 블루투스 활성화를 취소를 클릭하였다면
+                    Toast.makeText(getApplicationContext(), "취소", Toast.LENGTH_LONG).show();
+
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    void listPairedDevices() {
+        if (mBluetoothAdapter.isEnabled()) {
+            mPairedDevices = mBluetoothAdapter.getBondedDevices();
+
+            if (mPairedDevices.size() > 0) {
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+                builder.setTitle("장치 선택");
+
+                mListPairedDevices = new ArrayList<String>();
+                for (BluetoothDevice device : mPairedDevices) {
+                    mListPairedDevices.add(device.getName());
+                    //mListPairedDevices.add(device.getName() + "\n" + device.getAddress());
+                }
+                final CharSequence[] items = mListPairedDevices.toArray(new CharSequence[mListPairedDevices.size()]);
+                mListPairedDevices.toArray(new CharSequence[mListPairedDevices.size()]);
+
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        connectSelectedDevice(items[item].toString());
+                        Toast.makeText(getApplicationContext(), "연결: " + items[item].toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                androidx.appcompat.app.AlertDialog alert = builder.create();
+                alert.show();
+            } else {
+                Toast.makeText(getApplicationContext(), "페어링된 장치가 없습니다.", Toast.LENGTH_LONG).show();
+            }
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "블루투스가 비활성화 되어 있습니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    void connectSelectedDevice(String selectedDeviceName) {
+        for(BluetoothDevice tempDevice : mPairedDevices) {
+            if (selectedDeviceName.equals(tempDevice.getName())) {
+                mBluetoothDevice = tempDevice;
+                break;
+            }
+        }
+
+        Log.d("taeyoung", "connectSelectedDevice");
+
+        try {
+            Log.d("taeyoung", "inside try");
+            mBluetoothSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(BT_UUID);
+            mBluetoothSocket.connect();
+            mThreadConnectedBluetooth = new ConnectedBluetoothThread(mBluetoothSocket);
+            mThreadConnectedBluetooth.start();
+            mBluetoothHandler.obtainMessage(BT_CONNECTING_STATUS, 1, -1).sendToTarget();
+
+
+
+        } catch (IOException e) {
+            Log.d("taeyoung", "catch");
+
+            Toast.makeText(getApplicationContext(), "블루투스 연결 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class ConnectedBluetoothThread extends Thread {
+        private final BluetoothSocket mmSocket;
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+        public ConnectedBluetoothThread(BluetoothSocket socket) {
+            mmSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            try {
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "소켓 연결 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show();
+            }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+        public void run() {
+            byte[] buffer = new byte[1024];
+            int bytes;
+
+            while (true) {
+                try {
+                    bytes = mmInStream.available();
+                    if (bytes != 0) {
+                        SystemClock.sleep(100);
+                        bytes = mmInStream.available();
+                        bytes = mmInStream.read(buffer, 0, bytes);
+                        mBluetoothHandler.obtainMessage(BT_MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                    }
+                } catch (IOException e) {
+                    break;
+                }
+            }
+        }
+        public void write(String str) {
+            byte[] bytes = str.getBytes();
+            try {
+                mmOutStream.write(bytes);
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "데이터 전송 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show();
+            }
+        }
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "소켓 해제 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
+
 }
+
+
