@@ -89,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
     private float alcoholBarSize;
 //    private Button btConnectButton;
 //    private Button btSendData;
-    private Button testSubmit;
-    private EditText testDataEditText;
+//    private Button testSubmit;
+//    private EditText testDataEditText;
     private ImageView colorPickerPopup;
     private FrameLayout bottomLayout;
     private ImageView sojuSelect;
@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
     ConnectedBluetoothThread mThreadConnectedBluetooth;
     BluetoothDevice mBluetoothDevice;
     BluetoothSocket mBluetoothSocket;
+    Boolean isBluetoothConnected = false;
 
     // Bluetooth constants
     final static int BT_REQUEST_ENABLE = 1;
@@ -162,24 +163,28 @@ public class MainActivity extends AppCompatActivity {
         selectWhichAlcoholToDrink();
 
         // for Test ( change to Bluetooth incoming data afterward )
-        testSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+//        testSubmit.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                try{
+//                    testData = Float.valueOf(testDataEditText.getText().toString());
+//                    stackedTestData += testData;
+//                    count++;
+//                    updateCurrentTime();
+//                    xAxisFormat.add(currentTime);
+//                    settingCombinedChart();
+//                    setHorizontalBarChart(currentAlcohol);
+//                } catch (Exception e){
+//                    Toast.makeText(getApplicationContext(), "Invalid Input", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
-                try{
-                    testData = Float.valueOf(testDataEditText.getText().toString());
-                    stackedTestData += testData;
-                    count++;
-                    updateCurrentTime();
-                    xAxisFormat.add(currentTime);
-                    settingCombinedChart();
-                    setHorizontalBarChart(currentAlcohol);
-                } catch (Exception e){
-                    Toast.makeText(getApplicationContext(), "Invalid Input", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
+        /**
+         * Receiving Data from Arduino in real time, adding data to the variable
+         */
         mBluetoothHandler = new Handler(){
             public void handleMessage(android.os.Message msg){
                 if(msg.what == BT_MESSAGE_READ){
@@ -190,6 +195,16 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
+                    if (readMessage != null) {
+                        receivedData = readMessage;
+                        testData = Float.valueOf(receivedData);
+                        stackedTestData += testData;
+                        count++;
+                        updateCurrentTime();
+                        xAxisFormat.add(currentTime);
+                        settingCombinedChart();
+                        setHorizontalBarChart(currentAlcohol);
+                    }
                 }
             }
         };
@@ -213,8 +228,8 @@ public class MainActivity extends AppCompatActivity {
         cupColor = findViewById(R.id.cup_color_rectangle);
 
         // test
-        testSubmit = findViewById(R.id.submit_test);
-        testDataEditText = findViewById(R.id.for_test_edit_text);
+//        testSubmit = findViewById(R.id.submit_test);
+//        testDataEditText = findViewById(R.id.for_test_edit_text);
 
     }
 
@@ -379,15 +394,17 @@ public class MainActivity extends AppCompatActivity {
                                         for(int colorDataInt : outGoingColorDataIntArray) {
                                             firstData += colorDataInt + " ";
                                         }
-                                        mThreadConnectedBluetooth.write(firstData);
 
-                                        //btSPP.send(firstData, true);
+                                        if(isBluetoothConnected) {
+                                            mThreadConnectedBluetooth.write(firstData);
+                                        }
+
                                         cupColor.setBackgroundColor(envelope.getColor());
                                         cupColor.setAlpha((float) percentage / 100f);
-                                        Toast.makeText(getApplicationContext(), "설정 직후 색: " + firstData, Toast.LENGTH_SHORT).show();
+//                                        Toast.makeText(getApplicationContext(), "설정 직후 색: " + firstData, Toast.LENGTH_SHORT).show();
 
                                         try {
-                                            Thread.sleep(500);
+                                            Thread.sleep(1000);
                                         }catch (InterruptedException e){
                                             e.printStackTrace();
                                         }
@@ -397,9 +414,11 @@ public class MainActivity extends AppCompatActivity {
                                         for(int colorDataInt : outGoingColorDataIntArray) {
                                             secondData += colorDataInt + " ";
                                         }
-                                        mThreadConnectedBluetooth.write(secondData);
-                                        //btSPP.send(secondData, true);
-                                        Toast.makeText(getApplicationContext(), "색: " + secondData, Toast.LENGTH_SHORT).show();
+
+                                        if(isBluetoothConnected) {
+                                            mThreadConnectedBluetooth.write(secondData);
+                                        }
+                                        Toast.makeText(getApplicationContext(), "설정된 색: " + secondData, Toast.LENGTH_SHORT).show();
                                     }
                                 })
                         .setNegativeButton(getString(R.string.cancel),
@@ -562,15 +581,18 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int item) {
                         connectSelectedDevice(items[item].toString());
                         Toast.makeText(getApplicationContext(), "연결: " + items[item].toString(), Toast.LENGTH_SHORT).show();
+                        isBluetoothConnected = true;
                     }
                 });
                 androidx.appcompat.app.AlertDialog alert = builder.create();
                 alert.show();
             } else {
+                isBluetoothConnected = false;
                 Toast.makeText(getApplicationContext(), "페어링된 장치가 없습니다.", Toast.LENGTH_LONG).show();
             }
         }
         else {
+            isBluetoothConnected = false;
             Toast.makeText(getApplicationContext(), "블루투스가 비활성화 되어 있습니다.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -592,12 +614,12 @@ public class MainActivity extends AppCompatActivity {
             mThreadConnectedBluetooth = new ConnectedBluetoothThread(mBluetoothSocket);
             mThreadConnectedBluetooth.start();
             mBluetoothHandler.obtainMessage(BT_CONNECTING_STATUS, 1, -1).sendToTarget();
-
+            isBluetoothConnected = true;
 
 
         } catch (IOException e) {
             Log.d("taeyoung", "catch");
-
+            isBluetoothConnected = false;
             Toast.makeText(getApplicationContext(), "블루투스 연결 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show();
         }
     }

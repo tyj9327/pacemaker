@@ -241,22 +241,22 @@
                             android:layout_marginTop="5dp"
                             android:textColor="@color/background_start"/>
 
-                        <EditText
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_gravity="bottom|center_horizontal"
-                            android:id="@+id/for_test_edit_text"
-                            android:textColor="@color/background_start"
-                            />
+<!--                        <EditText-->
+<!--                            android:layout_width="50dp"-->
+<!--                            android:layout_height="50dp"-->
+<!--                            android:layout_gravity="bottom|center_horizontal"-->
+<!--                            android:id="@+id/for_test_edit_text"-->
+<!--                            android:textColor="@color/background_start"-->
+<!--                            />-->
 
-                        <Button
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:text="제출"
-                            android:layout_gravity="bottom|end"
-                            android:layout_marginEnd="55dp"
-                            android:id="@+id/submit_test"
-                            />
+<!--                        <Button-->
+<!--                            android:layout_width="50dp"-->
+<!--                            android:layout_height="50dp"-->
+<!--                            android:text="제출"-->
+<!--                            android:layout_gravity="bottom|end"-->
+<!--                            android:layout_marginEnd="55dp"-->
+<!--                            android:id="@+id/submit_test"-->
+<!--                            />-->
 
 
                     </FrameLayout>
