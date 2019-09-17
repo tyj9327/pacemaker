@@ -227,7 +227,7 @@
                             android:layout_marginTop="0dp"
                             android:layout_gravity="bottom"
                             android:layout_marginBottom="-5dp"
-                            android:layout_marginStart="50dp"
+                            android:layout_marginStart="65dp"
                             android:src="@drawable/color_picker_img" />
 
                         <TextView

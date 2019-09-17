@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     public String outGoingData = String.valueOf(outGoingColorData); // color
     private String userAlcoholCapacity;
     private int percentage = 0;
-    private int[] outGoingColorDataIntArray;
+    private int[] outGoingColorDataIntArray = {0, 255, 0, 0};
     private int opacity = 0;
 
     //etc
@@ -161,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
         setHorizontalBarChart(currentAlcohol);
         setColorPickerPopup();
         selectWhichAlcoholToDrink();
+
+
 
         // for Test ( change to Bluetooth incoming data afterward )
 //        testSubmit.setOnClickListener(new View.OnClickListener() {
@@ -208,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
     }
 
     private void findViews() {
@@ -217,8 +218,6 @@ public class MainActivity extends AppCompatActivity {
         barchart_top = findViewById(R.id.barchart_top);
         name = findViewById(R.id.main_name);
         alcoholPercent = findViewById(R.id.main_bar_percent);
-//        btConnectButton = findViewById(R.id.bluetooth_connect);
-//        btSendData = findViewById(R.id.bt_send_data);
         combinedChart = findViewById(R.id.combined_chart);
         horizontalBarCapacity = findViewById(R.id.horizontal_chart_capacity);
         colorPickerPopup = findViewById(R.id.color_picker_popup);
@@ -335,15 +334,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         LineDataSet set = new LineDataSet(entries, "누적 음주량");
-        set.setColor(R.color.background_start);
-        set.setLineWidth(4f);
-        set.setCircleColor(R.color.colorPrimary);
+        set.setColor(Color.rgb(197, 197, 197));
+        set.setLineWidth(3f);
+        set.setCircleColor(Color.rgb(197, 197, 197));
         set.setCircleRadius(3f);
-        set.setFillColor(R.color.colorAccent);
+        set.setFillColor(Color.rgb(197, 197, 197));
         set.setMode(LineDataSet.Mode.LINEAR);
         set.setDrawValues(false);
         set.setValueTextSize(10f);
-        set.setValueTextColor(R.color.colorAccent);
+//        set.setValueTextColor(R.color.colorAccent);
 
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         lineData.addDataSet(set);
@@ -372,7 +371,6 @@ public class MainActivity extends AppCompatActivity {
 
         return d;
     }
-
 
 
     private void setColorPickerPopup() {
@@ -418,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
                                         if(isBluetoothConnected) {
                                             mThreadConnectedBluetooth.write(secondData);
                                         }
-                                        Toast.makeText(getApplicationContext(), "설정된 색: " + secondData, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "색상 변경 완료!", Toast.LENGTH_SHORT).show();
                                     }
                                 })
                         .setNegativeButton(getString(R.string.cancel),
@@ -456,14 +454,19 @@ public class MainActivity extends AppCompatActivity {
         // 1075 luna
         // 1025 s6
         // 512 a5
-        float width = 1075f * (stackedTestData / volume);
+
+        float width;
+        if(stackedTestData / volume > 1) {
+            width = 1075f;
+            Toast.makeText(getApplicationContext(), "과음중입니다!", Toast.LENGTH_LONG).show();
+        } else {
+            width = 1075f * (stackedTestData / volume);
+        }
         percentage = (int) (stackedTestData / volume * 100);
         Log.d(TAG, "user_alcohol_capacity: " + userAlcoholCapacity);
         Log.d(TAG, "volume: " + volume);
         Log.d(TAG, "width: " + width);
         Log.d(TAG, "percentage: " + percentage);
-
-
 
 
         alcoholPercent.setText(percentage + "%");
@@ -475,12 +478,23 @@ public class MainActivity extends AppCompatActivity {
         barchart_top.setLayoutParams(new FrameLayout.LayoutParams((int) width, ViewGroup.LayoutParams.MATCH_PARENT));
 
         cupColor.setAlpha((float) percentage / 100f);
-        opacity = (int) (percentage / 100f) * 255;
+        opacity = (int) ((percentage / 100f) * 255.0);
+
+        if(opacity > 255) {
+            opacity = 255;
+        }
+
+        Log.d(TAG, "opacity: " + opacity);
 
         // opacity 수정해서 새로운 색 데이터 전송
-//        if(btSPP != null) {
-//            btSPP.send(outGoingData, true);
-//        }
+        if(isBluetoothConnected) {
+            outGoingColorDataIntArray[0] = opacity;
+            String colorData = "";
+            for(int colorDataInt : outGoingColorDataIntArray) {
+                colorData += colorDataInt + " ";
+            }
+            mThreadConnectedBluetooth.write(colorData);
+        }
 
     }
 
