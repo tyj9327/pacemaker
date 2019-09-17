@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/my_page"
-        android:title="my page"
+        android:title="BT 연결"
         app:showAsAction="never" />
 
 </menu>

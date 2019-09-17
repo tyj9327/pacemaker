@@ -16,24 +16,24 @@
         android:background="@drawable/rectangle"
         >
 
-        <Button
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/bluetooth_connect"
-            android:text="BT연결"
-            android:textSize="12sp"
-            android:layout_marginStart="5dp"
-            android:layout_gravity="center_horizontal"
-            />
+<!--        <Button-->
+<!--            android:layout_width="80dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/bluetooth_connect"-->
+<!--            android:text="BT연결"-->
+<!--            android:textSize="12sp"-->
+<!--            android:layout_marginStart="5dp"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            />-->
 
-        <Button
-            android:text="DATA보내기"
-            android:layout_marginStart="5dp"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:id="@+id/bt_send_data"
-            android:layout_gravity="end"/>
+<!--        <Button-->
+<!--            android:text="DATA보내기"-->
+<!--            android:layout_marginStart="5dp"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="12sp"-->
+<!--            android:id="@+id/bt_send_data"-->
+<!--            android:layout_gravity="end"/>-->
 
         <com.github.mikephil.charting.charts.CombinedChart
             android:id="@+id/combined_chart"
@@ -138,6 +138,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:text="오늘의 음주량 정보"
+                        android:layout_gravity="center_vertical"
                         android:textColor="@color/background_start"
                         android:textSize="12sp"
                         android:background="#ffffff"/>

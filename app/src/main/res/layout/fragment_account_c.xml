@@ -39,6 +39,8 @@
             android:autofillHints="0.0"
             android:textSize="18sp"
             android:gravity="center"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
             />
 
         <TextView

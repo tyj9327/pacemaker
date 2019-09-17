@@ -83,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView horizontalBarCapacity;
     private TextView alcoholPercent;
     private float alcoholBarSize;
-    private Button btConnectButton;
-    private Button btSendData;
+//    private Button btConnectButton;
+//    private Button btSendData;
     private Button testSubmit;
     private EditText testDataEditText;
     private ImageView colorPickerPopup;
@@ -118,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
     public String outGoingData = String.valueOf(outGoingColorData); // color
     private String userAlcoholCapacity;
     private int percentage = 0;
+    private int[] outGoingColorDataIntArray;
+    private int opacity = 0;
 
     //etc
     public String currentTime;
@@ -159,11 +161,8 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e){
                     Toast.makeText(getApplicationContext(), "Invalid Input", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
-
     }
 
     private void findViews() {
@@ -172,8 +171,8 @@ public class MainActivity extends AppCompatActivity {
         barchart_top = findViewById(R.id.barchart_top);
         name = findViewById(R.id.main_name);
         alcoholPercent = findViewById(R.id.main_bar_percent);
-        btConnectButton = findViewById(R.id.bluetooth_connect);
-        btSendData = findViewById(R.id.bt_send_data);
+//        btConnectButton = findViewById(R.id.bluetooth_connect);
+//        btSendData = findViewById(R.id.bt_send_data);
         combinedChart = findViewById(R.id.combined_chart);
         horizontalBarCapacity = findViewById(R.id.horizontal_chart_capacity);
         colorPickerPopup = findViewById(R.id.color_picker_popup);
@@ -205,6 +204,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if(btSPP.getServiceState() == BluetoothState.STATE_CONNECTED) {
+                    btSPP.disconnect();
+                }else  {
+                    Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                }
+                return false;
+            }
+        });
     }
 
     private void settingCombinedChart() {
@@ -280,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         set.setCircleColor(R.color.colorPrimary);
         set.setCircleRadius(3f);
         set.setFillColor(R.color.colorAccent);
-        set.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+        set.setMode(LineDataSet.Mode.LINEAR);
         set.setDrawValues(false);
         set.setValueTextSize(10f);
         set.setValueTextColor(R.color.colorAccent);
@@ -328,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
         btSPP.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
             @Override
             public void onDataReceived(byte[] data, String message) {
+                Log.d(TAG, "Bluetooth data received: " + message);
                 receivedData = message;
 
                 Toast.makeText(MainActivity.this, "수신 DATA: " + message, Toast.LENGTH_SHORT).show();
@@ -338,37 +352,21 @@ public class MainActivity extends AppCompatActivity {
         btSPP.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
             @Override
             public void onDeviceConnected(String name, String address) {
-                btConnectButton.setText("BT해제");
+                //btConnectButton.setText("BT해제");
                 Toast.makeText(getApplicationContext(), "Connected to " + name + "\n" + address, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onDeviceDisconnected() {
-                btConnectButton.setText("BT연결");
+                //btConnectButton.setText("BT연결");
                 Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public void onDeviceConnectionFailed() {
-                btConnectButton.setText("BT연결");
+                //btConnectButton.setText("BT연결");
                 Toast.makeText(getApplicationContext(), "Unable to connect", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        btConnectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(btSPP.getServiceState() == BluetoothState.STATE_CONNECTED) {
-                    btSPP.disconnect();
-                    btConnectButton.setText("BT연결");
-                }else  {
-                    Intent intent = new Intent(getApplicationContext(), DeviceList.class);
-                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
-                    btConnectButton.setText("BT연결중");
-                }
-
-
             }
         });
 
@@ -396,13 +394,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setDataUp() {
-        btSendData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "데이터", Toast.LENGTH_SHORT).show();
-                btSPP.send(outGoingData, true);
-            }
-        });
+//        btSendData.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(getApplicationContext(), "데이터", Toast.LENGTH_SHORT).show();
+//                btSPP.send(outGoingData, true);
+//            }
+//        });
     }
 
     @Override
@@ -445,11 +443,31 @@ public class MainActivity extends AppCompatActivity {
                                 new ColorEnvelopeListener() {
                                     @Override
                                     public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                                        outGoingData = envelope.getHexCode();
-                                        btSPP.send(outGoingData, true);
+//                                        outGoingData = envelope.getHexCode();
+                                        outGoingColorDataIntArray = envelope.getArgb();
+                                        String firstData = "";
+                                        for(int colorDataInt : outGoingColorDataIntArray) {
+                                            firstData += colorDataInt + " ";
+                                        }
+
+                                        btSPP.send(firstData, true);
                                         cupColor.setBackgroundColor(envelope.getColor());
                                         cupColor.setAlpha((float) percentage / 100f);
-                                        Toast.makeText(getApplicationContext(), "색: " + outGoingData, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "설정 직후 색: " + firstData, Toast.LENGTH_SHORT).show();
+
+                                        try {
+                                            Thread.sleep(500);
+                                        }catch (InterruptedException e){
+                                            e.printStackTrace();
+                                        }
+
+                                        outGoingColorDataIntArray[0] = opacity;
+                                        String secondData = "";
+                                        for(int colorDataInt : outGoingColorDataIntArray) {
+                                            secondData += colorDataInt + " ";
+                                        }
+                                        btSPP.send(secondData, true);
+                                        Toast.makeText(getApplicationContext(), "색: " + secondData, Toast.LENGTH_SHORT).show();
                                     }
                                 })
                         .setNegativeButton(getString(R.string.cancel),
@@ -484,7 +502,10 @@ public class MainActivity extends AppCompatActivity {
             horizontalBarCapacity.setText(beerCapacityBy500ML + "잔\n" + volume + "ml");
         }
 
-        float width = 1025f * (stackedTestData / volume);
+        // 1075 luna
+        // 1025 s6
+        // 512 a5
+        float width = 1075f * (stackedTestData / volume);
         percentage = (int) (stackedTestData / volume * 100);
         Log.d(TAG, "user_alcohol_capacity: " + userAlcoholCapacity);
         Log.d(TAG, "volume: " + volume);
@@ -503,6 +524,8 @@ public class MainActivity extends AppCompatActivity {
         barchart_top.setLayoutParams(new FrameLayout.LayoutParams((int) width, ViewGroup.LayoutParams.MATCH_PARENT));
 
         cupColor.setAlpha((float) percentage / 100f);
+        opacity = (int) (percentage / 100f) * 255;
+
         // opacity 수정해서 새로운 색 데이터 전송
 //        if(btSPP != null) {
 //            btSPP.send(outGoingData, true);
