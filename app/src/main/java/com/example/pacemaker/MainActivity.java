@@ -163,8 +163,36 @@ public class MainActivity extends AppCompatActivity {
         selectWhichAlcoholToDrink();
 
 
+        /**
+         * Receiving Data from Arduino in real time, adding data to the variable
+         */
+        mBluetoothHandler = new Handler(){
+            public void handleMessage(android.os.Message msg){
+                if(msg.what == BT_MESSAGE_READ){
+                    String readMessage = null;
+                    try {
+                        readMessage = new String((byte[]) msg.obj, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+//                    Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
+                    if (readMessage != null) {
+                        receivedData = readMessage;
+                        testData = Float.valueOf(receivedData);
+                        stackedTestData += testData;
+                        count++;
+                        updateCurrentTime();
+                        xAxisFormat.add(currentTime);
+                        settingCombinedChart();
+                        setHorizontalBarChart(currentAlcohol);
+                    }
+                }
+            }
+        };
 
-        // for Test ( change to Bluetooth incoming data afterward )
+        /**
+         *  for Test ( change to Bluetooth incoming data afterward )
+         */
 //        testSubmit.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -182,34 +210,6 @@ public class MainActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
-
-
-        /**
-         * Receiving Data from Arduino in real time, adding data to the variable
-         */
-        mBluetoothHandler = new Handler(){
-            public void handleMessage(android.os.Message msg){
-                if(msg.what == BT_MESSAGE_READ){
-                    String readMessage = null;
-                    try {
-                        readMessage = new String((byte[]) msg.obj, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
-                    if (readMessage != null) {
-                        receivedData = readMessage;
-                        testData = Float.valueOf(receivedData);
-                        stackedTestData += testData;
-                        count++;
-                        updateCurrentTime();
-                        xAxisFormat.add(currentTime);
-                        settingCombinedChart();
-                        setHorizontalBarChart(currentAlcohol);
-                    }
-                }
-            }
-        };
     }
 
     private void findViews() {
@@ -268,9 +268,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void settingCombinedChart() {
 
-        Log.d("taeyoung", "settingCombinedChart");
-        Log.d("taeyoung", "count: " + count);
-        Log.d("taeyoung", "testData: " + testData);
+        Log.d(TAG, "settingCombinedChart");
+        Log.d(TAG, "count: " + count);
+        Log.d(TAG, "testData: " + testData);
         Log.d(TAG, "stackData: " + stackedTestData);
 
         combinedChart.getDescription().setEnabled(false);
@@ -388,10 +388,16 @@ public class MainActivity extends AppCompatActivity {
                                     public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
 //                                        outGoingData = envelope.getHexCode();
                                         outGoingColorDataIntArray = envelope.getArgb();
-                                        String firstData = "";
+                                        String firstData = "@";
                                         for(int colorDataInt : outGoingColorDataIntArray) {
-                                            firstData += colorDataInt + " ";
+                                            String suffix = String.format("%03d", colorDataInt);
+                                            firstData += suffix + "#";
                                         }
+                                        firstData = firstData.substring(0, firstData.length() - 1);
+
+                                        /**
+                                         * firstData = @100#255#001#000
+                                         */
 
                                         if(isBluetoothConnected) {
                                             mThreadConnectedBluetooth.write(firstData);
@@ -408,14 +414,19 @@ public class MainActivity extends AppCompatActivity {
                                         }
 
                                         outGoingColorDataIntArray[0] = opacity;
-                                        String secondData = "";
+                                        String secondData = "@";
                                         for(int colorDataInt : outGoingColorDataIntArray) {
-                                            secondData += colorDataInt + " ";
+                                            String suffix = String.format("%03d", colorDataInt);
+                                            secondData += suffix + "#";
                                         }
+
+                                        secondData = secondData.substring(0, secondData.length() - 1);
 
                                         if(isBluetoothConnected) {
                                             mThreadConnectedBluetooth.write(secondData);
                                         }
+
+                                        //Toast.makeText(getApplicationContext(), "색상 변경 완료!: " + secondData, Toast.LENGTH_SHORT).show();
                                         Toast.makeText(getApplicationContext(), "색상 변경 완료!", Toast.LENGTH_SHORT).show();
                                     }
                                 })
@@ -457,10 +468,10 @@ public class MainActivity extends AppCompatActivity {
 
         float width;
         if(stackedTestData / volume > 1) {
-            width = 1075f;
+            width = 1025f;
             Toast.makeText(getApplicationContext(), "과음중입니다!", Toast.LENGTH_LONG).show();
         } else {
-            width = 1075f * (stackedTestData / volume);
+            width = 1025f * (stackedTestData / volume);
         }
         percentage = (int) (stackedTestData / volume * 100);
         Log.d(TAG, "user_alcohol_capacity: " + userAlcoholCapacity);
@@ -487,13 +498,19 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "opacity: " + opacity);
 
         // opacity 수정해서 새로운 색 데이터 전송
+        outGoingColorDataIntArray[0] = opacity;
+
+
         if(isBluetoothConnected) {
-            outGoingColorDataIntArray[0] = opacity;
-            String colorData = "";
+            String colorData = "@";
             for(int colorDataInt : outGoingColorDataIntArray) {
-                colorData += colorDataInt + " ";
+                String suffix = String.format("%03d", colorDataInt);
+                colorData += suffix + "#";
             }
+            colorData = colorData.substring(0, colorData.length() - 1);
+
             mThreadConnectedBluetooth.write(colorData);
+
         }
 
     }
