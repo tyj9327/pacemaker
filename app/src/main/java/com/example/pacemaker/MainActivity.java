@@ -125,8 +125,6 @@ public class MainActivity extends AppCompatActivity {
     final static int BT_CONNECTING_STATUS = 3;
     final static UUID BT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-
-
     //Data
     public String receivedData;
     public int outGoingColorData = R.color.background_start;
@@ -139,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
     //etc
     public String currentTime;
     public String currentAlcohol = "SOJU";
-
 
 
     @Override
@@ -468,10 +465,10 @@ public class MainActivity extends AppCompatActivity {
 
         float width;
         if(stackedTestData / volume > 1) {
-            width = 512f;
+            width = 1025f;
             Toast.makeText(getApplicationContext(), "과음중입니다!", Toast.LENGTH_LONG).show();
         } else {
-            width = 512f * (stackedTestData / volume);
+            width = 1025f * (stackedTestData / volume);
         }
         percentage = (int) (stackedTestData / volume * 100);
         Log.d(TAG, "user_alcohol_capacity: " + userAlcoholCapacity);
